@@ -1,1 +1,2 @@
 # PSPR-rice-HLJ
+This is the paddy rice mapping in Heilongjiang Province of China from 1990 to 2020 at the interval of 5 years, with the related article published on "Computers and Electronics in Agriculture" Journal. The published article is entitled with "Phenology-assisted Supervised Paddy Rice Mapping with the Landsat Imagery on Google Earth Engine: Experiments in Heilongjiang Province of China from 1990 to 2020".
