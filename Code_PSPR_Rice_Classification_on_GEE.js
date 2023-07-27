@@ -1,3 +1,11 @@
+/*****************************************************************************************************
+ * the GEE JavaScript code for final paddy rice classification used in the PSPR method
+ * If you find this code helpful, please cite: Zhang C.K. et al., Phenology-assisted Supervised Paddy Rice 
+ * Mapping with the Landsat Imagery on Google Earth Engine: Experiments in Heilongjiang Province of 
+ * China from 1990 to 2020, Computers and Electronics in Agriculture, 2023.
+ * Note that the shapefiles used in this code can be replaced by readers' own files
+******************************************************************************************************/
+
 var HLJGrid4 = ee.FeatureCollection("users/studyroomGEE/A_Paper/PSPR/HLJGrid_4");
 var HLJProvince = ee.FeatureCollection("users/studyroomGEE/A_Paper/PSPR/HLJProvince");
 var roi2 = HLJProvince;
@@ -246,8 +254,7 @@ function riceMap(roiRegion){
     // sBandsLength: the size of sBand
     // neighbor_diameter: the window size, 
     // neighbor_window_area: the window area, also the total pixels contained in the local window
-    
-    // var tmpFeaCol = ee.FeatureCollection(Col);
+  
     // convert the images bands values into a list, stored in the "vec" item
     var tmpFeaCol = ee.FeatureCollection(feaCol).map(function(item){
       return ee.Feature(item.geometry(0.001), null).set('vec', item.toDictionary(sBands).values(sBands));
@@ -259,7 +266,6 @@ function riceMap(roiRegion){
         return ee.Array.cat([ee.Array(list), new_value],2);
       }
       
-    // 
     var tmpSampleCol = tmpFeaCol.map(function(fea){
       var tmpFea = ee.Feature(fea);
       var tmpList = ee.List(tmpFea.get('vec'));
@@ -283,12 +289,10 @@ function riceMap(roiRegion){
     /*********************************************************************************
     * Select the value that is closest to the mean values of 3×3 window
     **********************************************************************************/
-    // print("ricePoint_1_1 first",ricePoint_1_1.first());
     var ricePoint_1_1 = NeighborPixelCol(imageData,neighbor_radius,ricePoint_1);
     var ricePoint_1_1_1 = NeighborSamples(ricePoint_1_1,s_bands,s_bandsLength,neighbor_diameter,neighbor_window_area);
-    // ricePoint_1 = null;
     ricePoint_1_1 = null;
-    // print("ricePoint_1_1 first",ricePoint_1_1.first());
+    
     var ricePoint_1_1_1_1 = ricePoint_1_1_1.map(function(fea){
       var tmpFea = ee.Feature(fea);
       var tmpArray = ee.Array(tmpFea.get('vec'));
@@ -307,9 +311,8 @@ function riceMap(roiRegion){
   
     var NonricePoint_1_1 = NeighborPixelCol(imageData,neighbor_radius,NonricePoint_1);
     var NonricePoint_1_1_1 = NeighborSamples(NonricePoint_1_1,s_bands,s_bandsLength,neighbor_diameter,neighbor_window_area);
-    // NonricePoint_1 = null;
     NonricePoint_1_1 = null;
-    // print("NonricePoint_1_1_1 first",NonricePoint_1_1_1.first());
+    
     var NonricePoint_1_1_1_1 = NonricePoint_1_1_1.map(function(fea){
       var tmpFea = ee.Feature(fea);
       var tmpArray = ee.Array(tmpFea.get('vec'));
