@@ -8,8 +8,8 @@
 
 var HLJGrid4 = ee.FeatureCollection("users/studyroomGEE/A_Paper/PSPR/HLJGrid_4");
 var roi = HLJGrid4;
-Map.addLayer(roi,{'color':'grey'},'roi');
-Map.centerObject(roi,6);
+Map.addLayer(roi,{'color':'grey'},'roi',false);
+Map.centerObject(roi,5);
 
 var GridTest = GridRegion(HLJGrid4.geometry(),6,6).filterBounds(roi);
 print("GridTest size:",GridTest.size());
@@ -124,8 +124,7 @@ var l5Col = ee.ImageCollection('LANDSAT/LT05/C01/T1_SR')
            .filterDate(year+'-04-01',year+'-11-01')
            .select(LC5_BANDS, STD_NAMES); 
 
-//l8Col.merge(l7Col).merge(S2Col)
-var L578COl = ee.ImageCollection(l8Col.merge(l7Col).merge(l5Col)) //.merge(l7)
+var L578COl = ee.ImageCollection(l8Col.merge(l7Col).merge(l5Col))
                 .sort("system:time_start")
                 .map(addIndex);
 print("L578COl",L578COl);
@@ -134,8 +133,7 @@ print("L578COl",L578COl);
 // please note that water class is extracted in this way 
 // since it satisfies that LSWI is greater thant NDVI
 var imgCol_flood = L578COl.filterDate(year+'-05-01',year+'-06-30') 
-                          .filterBounds(roi)
-                          // .select(["NDVI","LSWI","LSWI2NDVI",'DOY']); 
+                          .filterBounds(roi);
 
 /**************************************************************************
  * LSWI based rice mapping
@@ -168,7 +166,7 @@ var imgCol_growth_qmosaic = imgCol_growth.qualityMosaic('NDVI').clip(roi);
 Map.addLayer(imgCol_growth_qmosaic, PalettePanel, 'imgCol_growth_qmosaic', false);
 
 var rice_0_map = rice_0_lswi.unmask(0).clip(roi);
-Map.addLayer(rice_0_map.selfMask(), {"palette":'#FF0000'}, "rice_0_map");
+Map.addLayer(rice_0_map.selfMask(), {"palette":'#FF0000'}, "rice_0_map",false);
 
 /**************************************************************************
  * CCVS based rice mapping
@@ -187,8 +185,12 @@ var RCLE = imgCol_growth_qmosaic.select("LSWI").subtract(imgCol_flood_qmosaic.se
            .rename("RCLE");
 Map.addLayer(RCLE, visParam,'RCLE', false);
 
+var LSIW_min = imgCol_flood.select('LSWI').min().gt(0.1)
+                           .clip(roi).updateMask(cropland);
+Map.addLayer(LSIW_min.selfMask(), {"palette":'#FF0000'}, "LSIW_min",false);
+
 var RCLE_rice = RCLE.updateMask(RCLE.gt(0))
-                    .updateMask(rice_0_lswi)
+                    .updateMask(LSIW_min)
                     .lt(0.6)
                     .unmask(0)
                     .clip(roi); 
@@ -211,11 +213,11 @@ var riceMapCol = GridTest.toList(GridTest.size()).map(function(ROIFea){
 var samplePoint = ee.FeatureCollection(riceMapCol).flatten();
 Map.addLayer(samplePoint,null,'samplePoint',false);
 
+// check the generated sample data
 print("samplePoint:",samplePoint.limit(10));
 
 var ricePoint_1 = samplePoint.filter(ee.Filter.eq('landcover',1));
 Map.addLayer(ricePoint_1,{'color':'#FFA500'},'ricePoint_1');
-// print("ricePoint_1",ricePoint_1.limit(10));
 print("ricePoint_1 size",ricePoint_1.size());
 
 var NonricePoint_1 = samplePoint.filter(ee.Filter.eq('landcover',0));
