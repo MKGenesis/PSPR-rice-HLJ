@@ -1,9 +1,16 @@
+/*****************************************************************************************************
+ * The GEE JavaScript code for checking the paddy rice maps in Heilongjiang Province from 1990 to 2020
+ * If you find this code helpful, please cite: Zhang C.K. et al., Phenology-assisted Supervised Paddy Rice 
+ * Mapping with the Landsat Imagery on Google Earth Engine: Experiments in Heilongjiang Province of 
+ * China from 1990 to 2020, Computers and Electronics in Agriculture, 2023.
+ * Note that the shapefiles used in this code can be replaced by readers' own files
+******************************************************************************************************/
 var HLJGrid4 = ee.FeatureCollection("users/studyroomGEE/A_Paper/PSPR/HLJGrid_4");
 var HLJProvince = ee.FeatureCollection("users/studyroomGEE/A_Paper/PSPR/HLJProvince");
 var roi2 = HLJProvince;
 var roi = HLJGrid4;
 Map.addLayer(roi2,{'color':'grey'},'HLJ');
-Map.centerObject(roi,7);
+Map.centerObject(roi,5);
 
 var HLJRice1990 = ee.Image("users/chengkangmk/A_PSPR/v4/HLJRice_L578_Year_1990v4");
 var HLJRice1995 = ee.Image("users/chengkangmk/A_PSPR/v4/HLJRice_L578_Year_1995v4");
